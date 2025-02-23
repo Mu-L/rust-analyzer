@@ -6,7 +6,7 @@ use crate::{
     tests::{position, TEST_CONFIG},
 };
 
-fn check_expected_type_and_name(ra_fixture: &str, expect: Expect) {
+fn check_expected_type_and_name(#[rust_analyzer::rust_fixture] ra_fixture: &str, expect: Expect) {
     let (db, pos) = position(ra_fixture);
     let config = TEST_CONFIG;
     let (completion_context, _analysis) = CompletionContext::new(&db, pos, &config).unwrap();
@@ -409,5 +409,17 @@ fn main() {
 }
 "#,
         expect!["ty: i32, name: ?"],
+    );
+}
+
+#[test]
+fn expected_type_ref_return_pos() {
+    check_expected_type_and_name(
+        r#"
+fn f(thing: u32) -> &u32 {
+    &thin$0
+}
+"#,
+        expect!["ty: u32, name: ?"],
     );
 }
